@@ -1,0 +1,7 @@
+- Replace unittest.mock on pytest mock
+- Restrict tests layout
+
+
+- mypy
+- flake8
+- package
