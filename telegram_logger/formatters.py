@@ -1,6 +1,6 @@
 import html
 import logging
-from typing import List, NamedTuple, Optional
+from typing import List, Optional
 
 
 class TelegramFormatter(logging.Formatter):
@@ -10,7 +10,7 @@ class TelegramFormatter(logging.Formatter):
     # Max message size for telegram message
     MAX_MESSAGE_SIZE = 4096
     # Parse mode
-    PARSE_MODE = None # type: Optional[str]
+    PARSE_MODE = None  # type: Optional[str]
 
     def format_by_fragments(self, record: logging.LogRecord, start: int=0) -> List[str]:
         """
@@ -19,7 +19,7 @@ class TelegramFormatter(logging.Formatter):
         :optional start: Start char for splitting
 
         """
-        raise NotImplemented
+        raise NotImplementedError
 
 
 class TelegramHtmlFormatter(TelegramFormatter):
@@ -96,6 +96,3 @@ class TelegramHtmlFormatter(TelegramFormatter):
             code_fragment = message[start:end]
 
         return fragments
-
-
-

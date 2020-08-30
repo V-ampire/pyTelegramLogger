@@ -15,11 +15,10 @@ chat_ids = [1, 2, 3]
 
 
 tg_handler = TelegramMessageHandler(chat_ids, TOKEN)
-tg_handler.setFormatter(TelegramHtmlFormatter())
 
 
-def test_url():
-    assert tg_handler.url == f'https://api.telegram.org/bot{TOKEN}/sendMessage'
+def test_default_formatter():
+    assert isinstance(tg_handler.formatter, TelegramHtmlFormatter)
 
 
 def test_send_message_got_error(caplog):
@@ -65,6 +64,7 @@ def test_emit_when_no_formatter(mock_send, mock_format):
     record = logging.makeLogRecord({})
     mock_format.return_value = record
     handler = TelegramMessageHandler(chat_ids, TOKEN)
+    handler.formatter = None
     handler.emit(record)
     assert mock_format.call_count == len(chat_ids)
     assert mock_send.call_count == len(chat_ids)

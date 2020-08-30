@@ -19,21 +19,21 @@ class TelegramHandler(QueueHandler):
     # Message for setting unexpected class as formatter
     FORMATTER_WARNING = 'Formatter class is not subclass of telegram_logger.TelegramFormatter, \
 its possible problems with sending long log message to telegram'
-    # FIXME Другие параметры для запроса.
+
     def __init__(self, chat_ids: List[str], token: str, proxies: Optional[Dict[str, str]]=None,
-                    disable_web_page_preview: bool=False, disable_notification: bool=False,
-                    reply_to_message_id: Optional[int]=None,
-                    reply_markup: Optional[Dict[str, Any]]=None) -> None:
+                 disable_web_page_preview: bool=False, disable_notification: bool=False,
+                 reply_to_message_id: Optional[int]=None,
+                 reply_markup: Optional[Dict[str, Any]]=None) -> None:
         """
         Initialization.
         :param token: Telegram token.
         :optional proxy: Proxy for requests. Supports only https or socks5 proxy.
         """
-        self.queue = Queue(-1) # type: Queue
+        self.queue = Queue(-1)  # type: Queue
         super().__init__(self.queue)
         self.handler = TelegramMessageHandler(
             chat_ids,
-            token, 
+            token,
             proxies=proxies,
             disable_web_page_preview=disable_web_page_preview,
             disable_notification=disable_notification,
@@ -67,20 +67,24 @@ its possible problems with sending long log message to telegram'
 class MessageParamsMixin(object):
     """
     Mixin class with initialization and methods to prepare message for sending to telegram.
-    """    
+    """
+    # Warning message if formatter for handler has not parse mode
+    PARSE_MODE_WARNING = f'Formatter for handler has not attribute PARSE_MODE, \
+        its possible problems with sending message to telegram in correct format'
+
     def __init__(self, chat_ids: List[str], token: str,
-                    proxies: Optional[Dict[str, str]]=None, 
-                    disable_web_page_preview: bool=False,
-                    disable_notification: bool=False,
-                    reply_to_message_id: Optional[int]=None,
-                    reply_markup: Optional[Dict[str, Any]]=None, *args, **kwargs) -> None:        
+                 proxies: Optional[Dict[str, str]]=None,
+                 disable_web_page_preview: bool=False,
+                 disable_notification: bool=False,
+                 reply_to_message_id: Optional[int]=None,
+                 reply_markup: Optional[Dict[str, Any]]=None, *args, **kwargs) -> None:
         """
         Initialization.
         :param token: Telegram token.
         :optional proxy: Proxy for requests. Supports only https or socks5 proxy.
         """
         # https://github.com/python/mypy/issues/5887
-        super().__init__(*args, **kwargs) # type: ignore
+        super().__init__(*args, **kwargs)  # type: ignore
         self.token = token
         self.chat_ids = chat_ids
         self.proxies = proxies
@@ -89,11 +93,25 @@ class MessageParamsMixin(object):
         self.reply_to_message_id = reply_to_message_id
         self.reply_markup = reply_markup
 
+    @property
+    def parse_mode(self) -> Optional[str]:
+        """
+        Return formatter parse mode.
+        If formatter has not parse mode, then log warning message and return None.
+        """
+        formatter = self.formatter  # type: ignore
+        if formatter:
+            try:
+                return formatter.PARSE_MODE
+            except AttributeError:
+                logger.warning(self.PARSE_MODE_WARNING)
+        return None
+
     def _get_message_params(self) -> Dict[str, Any]:
         """
         Generate parameters for sending message.
-        """ 
-        params = {} # type: Dict
+        """
+        params = {}  # type: Dict
         reply_markup = self.get_reply_markup()
         if reply_markup:
             params['reply_markup'] = reply_markup
@@ -107,14 +125,13 @@ class MessageParamsMixin(object):
 
     @property
     def url(self) -> str:
-        return f'https://api.telegram.org/bot{self.token}/sendMessage'   
+        return f'https://api.telegram.org/bot{self.token}/sendMessage'
 
     def get_reply_markup(self) -> Optional[Dict[str, Any]]:
         """
         Override this if you need to generate reply_markup.
         """
         return self.reply_markup
-
 
 
 class TelegramMessageHandler(MessageParamsMixin, logging.Handler):
@@ -134,13 +151,13 @@ class TelegramMessageHandler(MessageParamsMixin, logging.Handler):
         :param parse_mode: Message format.
         """
         if not parse_mode:
-            parse_mode = self.formatter.PARSE_MODE # type: ignore
+            parse_mode = self.parse_mode
         params = self._get_message_params()
         params.update({
             'chat_id': chat_id,
             'text': text,
             'parse_mode': parse_mode,
-        })   
+        })
         response = requests.post(self.url, json=params, proxies=self.proxies)
         if not response.ok:
             logger.warning(f'Request to telegram got error with code: {response.status_code}')
@@ -166,7 +183,7 @@ class TelegramMessageHandler(MessageParamsMixin, logging.Handler):
     def _process_response(self, chat_id: str, response: Dict[str, Any]) -> None:
         """
         Check response from telegram and log warning if response got error.
-        :param chat_id: Telegram chat ID for sending log message. 
+        :param chat_id: Telegram chat ID for sending log message.
         :param response: Response as dict from telegram.
         """
         try:
@@ -186,13 +203,13 @@ class TelegramStreamHandler(MessageParamsMixin, logging.StreamHandler):
         # Set default formatter
         self.setFormatter(TelegramHtmlFormatter())
 
-    def get_send_message_data(self, chat_id: str, text: str, 
-                                parse_mode: Optional[str]=None) -> Dict[str, Any]:
+    def get_send_message_data(self, chat_id: str, text: str,
+                              parse_mode: Optional[str]=None) -> Dict[str, Any]:
         """
         Return data which would be used for sending message to telegram.
         """
         if not parse_mode:
-            parse_mode = self.formatter.PARSE_MODE # type: ignore
+            parse_mode = self.parse_mode
         params = self._get_message_params()
         params.update({
             'chat_id': chat_id,
@@ -230,11 +247,3 @@ class TelegramStreamHandler(MessageParamsMixin, logging.StreamHandler):
             raise
         except Exception:
             self.handleError(record)
-        
-
-
-
-
-
-
-

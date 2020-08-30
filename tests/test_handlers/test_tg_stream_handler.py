@@ -35,7 +35,7 @@ class TestTelegramStreamHandler():
         expected_params.update({
             'chat_id': expected_chat_id,
             'text': expected_message,
-            'parse_mode': self.tg_handler.formatter.PARSE_MODE,
+            'parse_mode': self.tg_handler.parse_mode,
         })
         expected = {
             'url': self.tg_handler.url,
