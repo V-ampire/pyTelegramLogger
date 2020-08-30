@@ -1,6 +1,6 @@
 import html
 import logging
-from typing import List, NamedTuple
+from typing import List, NamedTuple, Optional
 
 
 class TelegramFormatter(logging.Formatter):
@@ -10,7 +10,7 @@ class TelegramFormatter(logging.Formatter):
     # Max message size for telegram message
     MAX_MESSAGE_SIZE = 4096
     # Parse mode
-    PARSE_MODE = None
+    PARSE_MODE = None # type: Optional[str]
 
     def format_by_fragments(self, record: logging.LogRecord, start: int=0) -> List[str]:
         """

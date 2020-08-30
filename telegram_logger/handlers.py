@@ -29,7 +29,7 @@ its possible problems with sending long log message to telegram'
         :param token: Telegram token.
         :optional proxy: Proxy for requests. Supports only https or socks5 proxy.
         """
-        self.queue = Queue(-1)
+        self.queue = Queue(-1) # type: Queue
         super().__init__(self.queue)
         self.handler = TelegramMessageHandler(
             chat_ids,
@@ -40,6 +40,7 @@ its possible problems with sending long log message to telegram'
             reply_to_message_id=reply_to_message_id,
             reply_markup=reply_markup
         )
+        # Set default formatter
         self.handler.setFormatter(TelegramHtmlFormatter())
         self.listener = QueueListener(self.queue, self.handler)
         self.listener.start()
@@ -78,6 +79,8 @@ class MessageParamsMixin(object):
         :param token: Telegram token.
         :optional proxy: Proxy for requests. Supports only https or socks5 proxy.
         """
+        # https://github.com/python/mypy/issues/5887
+        super().__init__(*args, **kwargs) # type: ignore
         self.token = token
         self.chat_ids = chat_ids
         self.proxies = proxies
@@ -85,13 +88,12 @@ class MessageParamsMixin(object):
         self.disable_notification = disable_notification
         self.reply_to_message_id = reply_to_message_id
         self.reply_markup = reply_markup
-        super().__init__(*args, **kwargs)
 
     def _get_message_params(self) -> Dict[str, Any]:
         """
         Generate parameters for sending message.
         """ 
-        params = {}
+        params = {} # type: Dict
         reply_markup = self.get_reply_markup()
         if reply_markup:
             params['reply_markup'] = reply_markup
@@ -107,7 +109,7 @@ class MessageParamsMixin(object):
     def url(self) -> str:
         return f'https://api.telegram.org/bot{self.token}/sendMessage'   
 
-    def get_reply_markup(self) -> Dict[str, Any]:
+    def get_reply_markup(self) -> Optional[Dict[str, Any]]:
         """
         Override this if you need to generate reply_markup.
         """
@@ -119,6 +121,11 @@ class TelegramMessageHandler(MessageParamsMixin, logging.Handler):
     """
     Handler that send log message to telegram admins chats.
     """
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Set default formatter
+        self.setFormatter(TelegramHtmlFormatter())
+
     def send_message(self, chat_id: str, text: str, parse_mode: Optional[str]=None) -> None:
         """
         Send message to telegram chat.
@@ -127,7 +134,7 @@ class TelegramMessageHandler(MessageParamsMixin, logging.Handler):
         :param parse_mode: Message format.
         """
         if not parse_mode:
-            parse_mode = self.formatter.PARSE_MODE
+            parse_mode = self.formatter.PARSE_MODE # type: ignore
         params = self._get_message_params()
         params.update({
             'chat_id': chat_id,
@@ -176,6 +183,7 @@ class TelegramStreamHandler(MessageParamsMixin, logging.StreamHandler):
     """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        # Set default formatter
         self.setFormatter(TelegramHtmlFormatter())
 
     def get_send_message_data(self, chat_id: str, text: str, 
@@ -184,10 +192,7 @@ class TelegramStreamHandler(MessageParamsMixin, logging.StreamHandler):
         Return data which would be used for sending message to telegram.
         """
         if not parse_mode:
-            try:
-                parse_mode = self.formatter.PARSE_MODE
-            except AttributeError:
-                parse_mode = None
+            parse_mode = self.formatter.PARSE_MODE # type: ignore
         params = self._get_message_params()
         params.update({
             'chat_id': chat_id,
@@ -200,7 +205,7 @@ class TelegramStreamHandler(MessageParamsMixin, logging.StreamHandler):
             'proxies': self.proxies
         }
 
-    def emit(self, record: str) -> None:
+    def emit(self, record: logging.LogRecord) -> None:
         """
         Send message to telegram chats.
         If formatter is subclass of TelegramFormatter them emit message
