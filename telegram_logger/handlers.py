@@ -27,7 +27,16 @@ its possible problems with sending long log message to telegram'
         """
         Initialization.
         :param token: Telegram token.
-        :optional proxy: Proxy for requests. Supports only https or socks5 proxy.
+        :optional proxies: Proxy for requests. Format proxies corresponds format proxies 
+        in requests library.
+        Parameters for message to telegram, see https://core.telegram.org/bots/api#sendmessage
+        :optional disable_web_page_preview: Disables link previews for links in this message.
+        :optional disable_notification: Sends the message silently. 
+        Users will receive a notification with no sound.
+        :optional reply_to_message_id: If the message is a reply, ID of the original message.
+        :optional reply_markup: Additional interface options. 
+        A JSON-serialized object for an inline keyboard, custom reply keyboard,
+        instructions to remove reply keyboard or to force a reply from the user.
         """
         self.queue = Queue(-1)  # type: Queue
         super().__init__(self.queue)
@@ -45,18 +54,22 @@ its possible problems with sending long log message to telegram'
         self.listener = QueueListener(self.queue, self.handler)
         self.listener.start()
 
-    def setFormatter(self, formatter):
+    def setFormatter(self, formatter: logging.Formatter) -> None:
         """
         Set formatter to handler.
+        :param formatter: Formatter instance.
         """
         if not isinstance(formatter, TelegramFormatter):
             logger.warning(self.FORMATTER_WARNING)
         self.handler.setFormatter(formatter)
 
-    def prepare(self, record):
+    def prepare(self, record: logging.LogRecord) -> logging.LogRecord:
+        """
+        Prepare record.
+        """
         return record
 
-    def close(self):
+    def close(self) -> None:
         """
         Wait till all records will be processed then stop listener.
         """
@@ -80,8 +93,18 @@ class MessageParamsMixin(object):
                  reply_markup: Optional[Dict[str, Any]]=None, *args, **kwargs) -> None:
         """
         Initialization.
+        :param chat_ids: List of telegram chats IDs for getting log messages.
         :param token: Telegram token.
-        :optional proxy: Proxy for requests. Supports only https or socks5 proxy.
+        :optional proxies: Proxy for requests. Format proxies corresponds format proxies 
+        in requests library.
+        Parameters for message to telegram, see https://core.telegram.org/bots/api#sendmessage
+        :optional disable_web_page_preview: Disables link previews for links in this message.
+        :optional disable_notification: Sends the message silently. 
+        Users will receive a notification with no sound.
+        :optional reply_to_message_id: If the message is a reply, ID of the original message.
+        :optional reply_markup: Additional interface options. 
+        A JSON-serialized object for an inline keyboard, custom reply keyboard,
+        instructions to remove reply keyboard or to force a reply from the user.
         """
         # https://github.com/python/mypy/issues/5887
         super().__init__(*args, **kwargs)  # type: ignore
@@ -170,7 +193,7 @@ class TelegramMessageHandler(MessageParamsMixin, logging.Handler):
         Send message to telegram chats.
         If formatter is subclass of TelegramFormatter them emit message
         by fragments.
-        :param message: text for send.
+        :param record: Instance of log record.
         """
         for chat_id in self.chat_ids:
             if self.formatter and isinstance(self.formatter, TelegramFormatter):
@@ -207,6 +230,9 @@ class TelegramStreamHandler(MessageParamsMixin, logging.StreamHandler):
                               parse_mode: Optional[str]=None) -> Dict[str, Any]:
         """
         Return data which would be used for sending message to telegram.
+        :param chat_id: Telegram chat ID
+        :param text: Text of message.
+        :param parse_mode: Message format.
         """
         if not parse_mode:
             parse_mode = self.parse_mode
@@ -227,7 +253,7 @@ class TelegramStreamHandler(MessageParamsMixin, logging.StreamHandler):
         Send message to telegram chats.
         If formatter is subclass of TelegramFormatter them emit message
         by fragments.
-        :param message: text for send.
+        :param record: Instance of log record.
         """
         try:
             stream = self.stream

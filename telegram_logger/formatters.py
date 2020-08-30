@@ -24,7 +24,7 @@ class TelegramFormatter(logging.Formatter):
 
 class TelegramHtmlFormatter(TelegramFormatter):
     """
-    Class to format log record to markdown format for message.
+    Class to format log record in html format for message.
     """
     START_CODE = "<pre>"
     END_CODE = '</pre>'
@@ -42,6 +42,7 @@ class TelegramHtmlFormatter(TelegramFormatter):
     def _mark_code(self, code_text: str) -> str:
         """
         Put text of code in block code tag
+        :param code_text: Text of code for message.
         """
         return f"{self.START_CODE}{html.escape(code_text)}{self.END_CODE}"
 
