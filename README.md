@@ -72,9 +72,9 @@ LOGGING_CONFIG = {
 ```
 
 
-### 2. What if iI don't want to send messages to telegram during development?
+### 2. What if I don't want to send messages to telegram during development?
 
-Sometimes, when you just develope you app, you dont want to send log messages to telegram, but you want to control it you can use `telegram_logger.TelegramStreamHandler(cht_ids, token, stream=None)` which streams dict with message text and params instead of send it to telegram.
+Sometimes, when you just develope you app and you dont want to send log messages to telegram, but want to control - use `telegram_logger.TelegramStreamHandler(cht_ids, token, stream=None)` which streams dict with message text and params instead of send it to telegram.
 
 
 ###3. Can I use a proxy for sending messages?
