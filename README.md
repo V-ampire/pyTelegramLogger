@@ -5,6 +5,9 @@ This package provides handlers to send logging messages to telegram chats. It us
 
 ## Installation
 
+`pip install pyTelegramLogger`
+`pipenv install pyTelegramLogger`
+
 ## Usage
 
 1. Configure logger
