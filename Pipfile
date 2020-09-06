@@ -11,6 +11,7 @@ factory-boy = "*"
 environs = "*"
 mypy = "*"
 flake8 = "*"
+twine = "*"
 
 [packages]
 requests = "*"
