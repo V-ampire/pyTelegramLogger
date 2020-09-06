@@ -1,7 +1,7 @@
 # pyTelegramLogger
 
 ## Description
-This package provides handlers to send logging messages to telegram chats. I uses a separate thread for handling messages (see [logging.QueueHandler](https://docs.python.org/3/library/logging.handlers.html#queuehandler) for details). You can send messages to multiple chats, including big messages (over 4096 chars). Big messages will be split into several parts and tagged by unique hashtag for current log record.
+This package provides handlers to send logging messages to telegram chats. It uses a separate thread for handling messages (see [logging.QueueHandler](https://docs.python.org/3/library/logging.handlers.html#queuehandler) for details). You can send messages to multiple chats, including big messages (over 4096 chars). Big messages will be split into several parts and tagged by unique hashtag for current log record.
 
 ## Installation
 
