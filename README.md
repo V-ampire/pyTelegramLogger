@@ -77,7 +77,7 @@ LOGGING_CONFIG = {
 Sometimes, when you just develope you app and you dont want to send log messages to telegram, but want to control - use `telegram_logger.TelegramStreamHandler(cht_ids, token, stream=None)` which streams dict with message text and params instead of send it to telegram.
 
 
-###3. Can I use a proxy for sending messages?
+### 3. Can I use a proxy for sending messages?
 
 Yes you can. You can specify proxy in key of config `proxies` using dict format as [requests](https://requests.readthedocs.io/en/master/):
 
