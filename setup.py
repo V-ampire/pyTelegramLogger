@@ -120,6 +120,7 @@ setup(
         'Programming Language :: Python :: Implementation :: CPython',
     ],
     # $ setup.py publish support.
+    keywords=['telegram', 'logger', 'logging', 'telegram_logger'],
     cmdclass={
         'upload': UploadCommand,
     },
