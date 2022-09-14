@@ -12,7 +12,7 @@ URL = 'https://github.com/V-ampire/pyTelegramLogger'
 EMAIL = 'webjob010@gmail.com'
 AUTHOR = 'V-ampire'
 REQUIRES_PYTHON = '>=3.6.0'
-VERSION = '1.0.0'
+VERSION = '1.0.1'
 
 # What packages are required for this module to be executed?
 REQUIRED = [
