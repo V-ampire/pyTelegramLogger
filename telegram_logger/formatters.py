@@ -56,9 +56,11 @@ class TelegramHtmlFormatter(TelegramFormatter):
             description = self._mark_code(self.formatException(record.exc_info))
         timestamp = self.formatTime(record)
 
-        return "<b>{levelname}</b>\n\n{timestamp}: {msg}\n\n{description}".format(
+        return "<b>{levelname}</b>\n\n{timestamp} {module} {funcName}: {msg}\n\n{description}".format(
             levelname=record.levelname,
             timestamp=timestamp,
+            module=record.module,
+            funcName=record.funcName,
             msg=html.escape(record.getMessage()),
             description=description
         )
