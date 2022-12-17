@@ -23,7 +23,7 @@ its possible problems with sending long log message to telegram'
     def __init__(self, chat_ids: List[str], token: str, proxies: Optional[Dict[str, str]]=None,
                  disable_web_page_preview: bool=False, disable_notification: bool=False,
                  reply_to_message_id: Optional[int]=None,
-                 reply_markup: Optional[Dict[str, Any]]=None) -> None:
+                 reply_markup: Optional[Dict[str, Any]]=None, *args, **kwargs) -> None:
         """
         Initialization.
         :param token: Telegram token.
@@ -47,7 +47,8 @@ its possible problems with sending long log message to telegram'
             disable_web_page_preview=disable_web_page_preview,
             disable_notification=disable_notification,
             reply_to_message_id=reply_to_message_id,
-            reply_markup=reply_markup
+            reply_markup=reply_markup,
+            *args, **kwargs
         )
         # Set default formatter
         self.handler.setFormatter(TelegramHtmlFormatter())
