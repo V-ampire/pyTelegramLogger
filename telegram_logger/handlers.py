@@ -23,7 +23,7 @@ its possible problems with sending long log message to telegram'
     def __init__(self, chat_ids: List[str], token: str, proxies: Optional[Dict[str, str]]=None,
                  disable_web_page_preview: bool=False, disable_notification: bool=False,
                  reply_to_message_id: Optional[int]=None,
-                 reply_markup: Optional[Dict[str, Any]]=None, *args, **kwargs) -> None:
+                 reply_markup: Optional[Dict[str, Any]]=None, **kwargs) -> None:
         """
         Initialization.
         :param token: Telegram token.
@@ -48,7 +48,7 @@ its possible problems with sending long log message to telegram'
             disable_notification=disable_notification,
             reply_to_message_id=reply_to_message_id,
             reply_markup=reply_markup,
-            *args, **kwargs
+            **kwargs
         )
         # Set default formatter
         self.handler.setFormatter(TelegramHtmlFormatter())
@@ -91,7 +91,7 @@ class MessageParamsMixin(object):
                  disable_web_page_preview: bool=False,
                  disable_notification: bool=False,
                  reply_to_message_id: Optional[int]=None,
-                 reply_markup: Optional[Dict[str, Any]]=None, *args, **kwargs) -> None:
+                 reply_markup: Optional[Dict[str, Any]]=None, **kwargs) -> None:
         """
         Initialization.
         :param chat_ids: List of telegram chats IDs for getting log messages.
@@ -108,7 +108,7 @@ class MessageParamsMixin(object):
         instructions to remove reply keyboard or to force a reply from the user.
         """
         # https://github.com/python/mypy/issues/5887
-        super().__init__(*args, **kwargs)  # type: ignore
+        super().__init__(**kwargs)  # type: ignore
         self.token = token
         self.chat_ids = chat_ids
         self.proxies = proxies
