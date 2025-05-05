@@ -9,7 +9,6 @@ from setuptools import find_packages, setup, Command
 NAME = 'pyTelegramLogger'
 DESCRIPTION = 'This package provides handlers to send logging messages to telegram chats.'
 URL = 'https://github.com/V-ampire/pyTelegramLogger'
-EMAIL = 'webjob010@gmail.com'
 AUTHOR = 'V-ampire'
 REQUIRES_PYTHON = '>=3.6.0'
 VERSION = None
